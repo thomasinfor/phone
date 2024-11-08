@@ -1,0 +1,67 @@
+<title>Phone View</title>
+<style>
+:root {
+  --w: 1179;
+  --h: 2542;
+  --ph: calc(min(95vh, 91vw * var(--h) / var(--w)));
+  --pw: calc(min(91vw, 95vh * var(--w) / var(--h)));
+  --bw: 430px;
+  --bh: calc(var(--bw) * var(--h) / var(--w));
+}
+body {
+  /* transform: rotate(90deg); */
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.phone {
+  position: absolute;
+  height: var(--ph);
+  top: calc((100vh - var(--ph)) / 2);
+  width: var(--pw);
+  left: calc((100vw - var(--pw)) / 2);
+}
+#iframe {
+  /* background-color: lightgreen; */
+  border: none;
+  box-sizing: border-box;
+  border-radius: calc(0.124 * var(--bw));
+  padding-top: calc(0.06 * var(--bh));
+  width: var(--bw);
+  height: var(--bh);
+  transform-origin: left top;
+}
+img {
+  transform-origin: calc(50% + 0.012 * var(--pw)) calc(50% + 0.005 * var(--ph));
+  object-fit: contain;
+  transform: scale(1.083);
+  pointer-events: none;
+}
+</style>
+<body>
+  <iframe class="phone" id="iframe" width="430"></iframe>
+  <img class="phone" id="image" src="iphone.png">
+</body>
+<script>
+  const iframe = document.getElementById("iframe");
+  const image = document.getElementById("image");
+  const searchParams = new URLSearchParams(window.location.search);
+  const url = searchParams.get("url");
+
+  if (!url || !url.length)
+    window.location = window.location.pathname + "?url=" + encodeURIComponent(window.prompt("Please provide the url:"));
+  else
+    iframe.src = url.startsWith("http") ? url : "https://" + url;
+
+  if (searchParams.get("width") && searchParams.get("width").match(/^\d+$/g)) {
+    const width = Number(searchParams.get("width"));
+    document.documentElement.style.setProperty("--bw", `${width}px`);
+    iframe.width = width;
+  }
+
+  const resize = () => iframe.style.transform = `scale(${image.width / iframe.width})`;
+  window.addEventListener("resize", resize);
+  resize();
+</script>
